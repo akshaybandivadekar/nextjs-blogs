@@ -1,4 +1,4 @@
-import { useRouter } from 'next/router';
+import { useRouter } from "next/router";
 
 function PorfolioProjectPage() {
   const router = useRouter();
@@ -7,7 +7,7 @@ function PorfolioProjectPage() {
 
   // send a request to some backend server
   // to fetch the piece of data with an id of router.query.projectid
-  
+
   return (
     <div>
       <h1>The Portfolio Project Page</h1>
