@@ -9,8 +9,6 @@ function HomePage(props) {
   );
 }
 
-export default HomePage;
-
 export async function getStaticProps() {
   const featureEvents = await getFeaturedEvents();
 
@@ -20,3 +18,5 @@ export async function getStaticProps() {
     },
   };
 }
+
+export default HomePage;
