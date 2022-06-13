@@ -1,12 +1,16 @@
-import { MongoClient } from 'mongodb';
 import { getAllDocuments } from '../../../helpers/db-util';
+import { connectDatabase, insertDocument } from '../../../helpers/db-util';
 
 async function handler(req, res) {
   const eventId = req.query.eventId;
 
-  const client = await MongoClient.connect(
-    'mongodb+srv://akshay:5YSpktUBga1dMRyM@cluster0.tba6k.mongodb.net/events?retryWrites=true&w=majority'
-  );
+  let client;
+  try {
+    client = await connectDatabase();
+  } catch (error) {
+    res.status(500).json({ message: 'Connecting to the database failed!' });
+    return;
+  }
 
   if (req.method === 'POST') {
     const { email, name, text } = req.body;
@@ -19,6 +23,7 @@ async function handler(req, res) {
       text.trim() === ''
     ) {
       res.status(422).json({ message: 'Invalid Input.' });
+      client.close();
       return;
     }
 
@@ -28,21 +33,26 @@ async function handler(req, res) {
       text,
       eventId,
     };
-    const db = client.db();
-    const result = await db.collection('comments').insertOne(newComment);
-    newComment.id = result.insertedId.toString();
-
-    res.status(201).json({ message: 'Added comment.', comment: newComment });
+    let result;
+    try {
+      result = await insertDocument(client, 'comments', newComment);
+      res.status(201).json({ message: 'Added comment.', comment: newComment });
+    } catch (error) {
+      res.status(500).json({ message: 'Inserting Comment Failed!' });
+    }
   } else if (req.method === 'GET') {
-    const db = client.db();
-    const documents = await getAllDocuments(
-      db,
-      'comments',
-      { _id: -1 },
-      { eventId: eventId }
-    );
-
-    res.status(200).json({ comments: documents });
+    try {
+      const db = client.db();
+      const documents = await getAllDocuments(
+        db,
+        'comments',
+        { _id: -1 },
+        { eventId: eventId }
+      );
+      res.status(200).json({ comments: documents });
+    } catch (error) {
+      res.status(500).json({ message: 'Getting Comment Failed!' });
+    }
   }
   client.close();
 }
