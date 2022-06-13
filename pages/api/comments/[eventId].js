@@ -29,8 +29,8 @@ function handler(req, res) {
     const dummyList = [
       {
         id: 'c1',
-        name: 'akshay',
-        text: 'A first comment',
+        name: 'Akshay',
+        text: 'A First comment',
       },
       {
         id: 'c2',
