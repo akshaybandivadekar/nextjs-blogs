@@ -19,7 +19,7 @@ function NewsletterRegistration() {
     })
       .then((res) => res.json())
       .then((data) => {
-        console.log('data', data);
+        emailInputRef.current.value = '';
       });
   }
 
