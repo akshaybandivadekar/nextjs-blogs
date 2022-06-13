@@ -21,7 +21,6 @@ async function handler(req, res) {
       return;
     }
 
-    console.log(email, name, text);
     const newComment = {
       email,
       name,
@@ -34,20 +33,14 @@ async function handler(req, res) {
 
     res.status(201).json({ message: 'Added comment.', comment: newComment });
   } else if (req.method === 'GET') {
-    const dummyList = [
-      {
-        id: 'c1',
-        name: 'Akshay',
-        text: 'A First comment',
-      },
-      {
-        id: 'c2',
-        name: 'Manual',
-        text: 'A Second comment',
-      },
-    ];
+    const db = client.db();
+    const documents = await db
+      .collection('comments')
+      .find()
+      .sort({ _id: -1 })
+      .toArray();
 
-    res.status(200).json({ comments: dummyList });
+    res.status(200).json({ comments: documents });
   }
   client.close();
 }
